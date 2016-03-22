@@ -1,3 +1,5 @@
+require 'date'
+
 class Task << Post
 
   def initialize
@@ -8,11 +10,19 @@ class Task << Post
 
 
   def read_from_console
-    #todo
+    puts "What to do?"
+    @text = STDIN.gets.chomp
+
+    puts "What is a due date? Date format: DD.MM.YYYY, e.x. 12.05.2016"
+    input = STDIN.gets.chomp
+
+    @due_date = Date.parse(input)
   end
 
   def to_strings
-    #todo
+    time_string = "Created: #{@created_at.strftime("%Y.%m.%d, %H:%M:%S")} \n\r \n\r"
+    deadline = "Due date: #{@due_date}"
+    return [deadline, @text, time_string]
   end
 
 end
