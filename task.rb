@@ -1,6 +1,6 @@
 require 'date'
 
-class Task << Post
+class Task < Post
 
   def initialize
     super

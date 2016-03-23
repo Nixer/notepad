@@ -1,4 +1,4 @@
-class Memo << Post
+class Memo < Post
 
   def read_from_console
     puts "New note (it would be saved till the keyword \"end\"):"
