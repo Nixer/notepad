@@ -12,6 +12,35 @@ class Post
     return post_types[type].new
   end
 
+  def self.find(limit, type, id)
+    db = SQLite3::Database.open(@@SQLITE_DB_FILE)
+
+    #1.particular record
+    if !id.nil?
+      db.results_as_hash = true
+
+      result = db.execute("SELECT * FROM posts WHERE rowid = ?", id)
+      result = result[0] if result.is_a? Array
+
+      db.close
+
+      if result.empty?
+        puts "This id #{id} is not found in DB! =("
+        return nil
+      else
+        post = create(result["type"])
+
+        post.load_data(result)
+      end
+
+      return post
+
+    else
+    #2.return table of records
+
+    end
+  end
+
   def initialize
     @created_at = Time.now
     @text = nil
@@ -43,27 +72,27 @@ class Post
   end
 
   begin
-  def save_to_db
-    db = SQLite3::Database.open(@@SQLITE_DB_FILE)
-    db.results_as_hash = true
-    db.execute(
-        "INSERT INTO posts (" +
-            to_db_hash.keys.join(', ') + ") " +
-            " VALUES ( " +
-            ('?,'*to_db_hash.keys.size).chomp(',') +
-            ")",
-        to_db_hash.values
-    )
-    insert_row_id = db.last_insert_row_id
+    def save_to_db
+      db = SQLite3::Database.open(@@SQLITE_DB_FILE)
+      db.results_as_hash = true
+      db.execute(
+          "INSERT INTO posts (" +
+              to_db_hash.keys.join(', ') + ") " +
+              " VALUES ( " +
+              ('?,'*to_db_hash.keys.size).chomp(',') +
+              ")",
+          to_db_hash.values
+      )
+      insert_row_id = db.last_insert_row_id
 
-    db.close
+      db.close
 
-    return insert_row_id
-  end
+      return insert_row_id
+    end
 
-  rescue SQLite3::SQLException => e
-    puts "Не удалось выполнить запрос в базе #{@@SQLITE_DB_FILE}"
-    abort e.message
+    rescue SQLite3::SQLException => e
+      puts "Unable to make a DB request to #{@@SQLITE_DB_FILE}"
+      abort e.message
   end
 
   def to_db_hash
@@ -71,6 +100,10 @@ class Post
         'type' => self.class.name,
         'created_at' => @created_at.to_s
     }
+  end
+
+  def load_data(data_hash)
+    @created_at = Time.parse(data_hash['created_at'])
   end
 
 end
