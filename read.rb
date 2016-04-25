@@ -40,7 +40,7 @@ else #show table of results
     puts
 
     row.each do |element|
-      print "| #{element.to_s.delete("\\n\\r")[0..40]}\t"
+      print "| #{element.to_s.delete("\\n\\r")[0..40]}\t "
     end
   end
 end

@@ -37,7 +37,26 @@ class Post
 
     else
     #2.return table of records
+      db.results_as_hash = false
 
+      query = "SELECT rowid, * FROM posts "
+
+      query += "WHERE type = :type " unless type.nil?
+      query += "ORDER by rowid DESC "
+
+      query += "LIMIT :limit " unless limit.nil?
+
+      statement = db.prepare(query)
+
+      statement.bind_param('type', type) unless type.nil?
+      statement.bind_param('limit', limit) unless limit.nil?
+
+      result = statement.execute!
+
+      statement.close
+      db.close
+
+      return result
     end
   end
 
