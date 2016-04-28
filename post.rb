@@ -17,8 +17,13 @@ class Post
 
     if id
       db.results_as_hash = true
-
+      begin
       result = db.execute("SELECT * FROM posts WHERE rowid = ?", id)
+      rescue SQLite3::SQLException => e
+        puts "Unable to make request in DB #{@@SQLITE_DB_FILE}"
+        abort e.message
+      end
+
       result = result[0] if result.is_a? Array
 
       db.close
@@ -39,6 +44,7 @@ class Post
   end
 
   def self.find_all(limit, type)
+
     db = SQLite3::Database.open(@@SQLITE_DB_FILE)
 
       db.results_as_hash = false
@@ -50,7 +56,12 @@ class Post
 
       query += "LIMIT :limit " unless limit.nil?
 
+    begin
       statement = db.prepare(query)
+    rescue SQLite3::SQLException => e
+      puts "Unable to make request in DB #{@@SQLITE_DB_FILE}"
+      abort e.message
+    end
 
       statement.bind_param('type', type) unless type.nil?
       statement.bind_param('limit', limit) unless limit.nil?
