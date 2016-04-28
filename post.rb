@@ -12,11 +12,10 @@ class Post
     return post_types[type].new
   end
 
-  def self.find(limit, type, id)
+  def self.find_by_id(id)
     db = SQLite3::Database.open(@@SQLITE_DB_FILE)
 
-    #1.particular record
-    if !id.nil?
+    if id
       db.results_as_hash = true
 
       result = db.execute("SELECT * FROM posts WHERE rowid = ?", id)
@@ -31,12 +30,17 @@ class Post
         post = create(result["type"])
 
         post.load_data(result)
+        return post
       end
-
-      return post
-
     else
-    #2.return table of records
+      puts "Unable to find post without id"
+      return nil
+    end
+  end
+
+  def self.find_all(limit, type)
+    db = SQLite3::Database.open(@@SQLITE_DB_FILE)
+
       db.results_as_hash = false
 
       query = "SELECT rowid, * FROM posts "
@@ -57,8 +61,9 @@ class Post
       db.close
 
       return result
-    end
   end
+
+
 
   def initialize
     @created_at = Time.now
