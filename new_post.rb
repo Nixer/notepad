@@ -2,8 +2,9 @@ require_relative 'post.rb'
 require_relative 'link.rb'
 require_relative 'task.rb'
 require_relative 'memo.rb'
+require_relative 'tweet.rb'
 
-puts "Hi, I`m yours notepad! Ver.2.0 + SQLite"
+puts "Hi, I`m yours notepad! Ver.3.0 + SQLite + Twitter"
 puts "What would you like to put in me?"
 
 choices = Post.post_types.keys
